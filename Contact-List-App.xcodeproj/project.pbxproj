@@ -16,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1C59E8ED2C586B9F00A3699E /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		1C6F478C2C586AD100E50374 /* Contact-List-App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Contact-List-App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C6F478F2C586AD100E50374 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1C6F47912C586AD100E50374 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -37,11 +38,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C59E8EC2C586B9E00A3699E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1C59E8ED2C586B9F00A3699E /* libsqlite3.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		1C6F47832C586AD000E50374 = {
 			isa = PBXGroup;
 			children = (
 				1C6F478E2C586AD100E50374 /* Contact-List-App */,
 				1C6F478D2C586AD100E50374 /* Products */,
+				1C59E8EC2C586B9E00A3699E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
