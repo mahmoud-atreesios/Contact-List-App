@@ -123,3 +123,22 @@ extension ViewController{
         sqlite3_finalize(queryStatement)
     }
 }
+
+//MARK: - 5th delete data you want from tables in sqlite db
+extension ViewController{
+    func delete(ID: Int, db:OpaquePointer?){
+        let deleteStatementString = "DELETE FROM Contact WHERE Id = \(ID);"
+        var deleteStatement: OpaquePointer?
+        if sqlite3_prepare_v2(db, deleteStatementString, -1, &deleteStatement, nil) ==
+            SQLITE_OK {
+            if sqlite3_step(deleteStatement) == SQLITE_DONE {
+                print("\nSuccessfully deleted row.")
+            } else {
+                print("\nCould not delete row.")
+            }
+        } else {
+            print("\nDELETE statement could not be prepared")
+        }
+        sqlite3_finalize(deleteStatement)
+    }
+}
