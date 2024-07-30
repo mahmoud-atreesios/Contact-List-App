@@ -37,3 +37,57 @@ extension ViewController{
         }
     }
 }
+
+//MARK: - 2nd create the tables you need using sqlite db
+extension ViewController{
+    func createTable(db:OpaquePointer?){
+        let createTableString = """
+        CREATE TABLE Contact(Id INT PRIMARY KEY NOT NULL,
+        Name CHAR(255));
+"""
+        //1
+        var createTableStatment:OpaquePointer?
+        
+        //2
+        if sqlite3_prepare_v2(db, createTableString, -1, &createTableStatment, nil) == SQLITE_OK{
+           //3
+            if sqlite3_step(createTableStatment) == SQLITE_DONE {
+                print("\nContact table created")
+            }else{
+                print("\nContact table is not created")
+            }
+        }else{
+            print("Create table statment is not prepared")
+        }
+        //4
+        sqlite3_finalize(createTableStatment)
+    }
+}
+
+//MARK: - 3rd insert data in the tables you need using sqlite db
+extension ViewController{
+    func insert(id:Int32,name:NSString,db:OpaquePointer?){
+        let insertStatementString = "INSERT INTO Contact (Id,Name) VALUES (?, ?);"
+        var insertStatment:OpaquePointer?
+        //1
+        if sqlite3_prepare_v2(db, insertStatementString, -1, &insertStatment, nil) == SQLITE_OK{
+            
+            //2
+            sqlite3_bind_int(insertStatment, 1, id)
+            
+            //3
+            sqlite3_bind_text(insertStatment, 2, name.utf8String, -1, nil)
+            
+            //4
+            if sqlite3_step(insertStatment) == SQLITE_DONE{
+                print("\nSuccessfully inserted row")
+            }else{
+                print("User with this ID already exists")
+            }
+        }else{
+            print("Insert statment is not prepared")
+        }
+        //5
+        sqlite3_finalize(insertStatment)
+    }
+}
