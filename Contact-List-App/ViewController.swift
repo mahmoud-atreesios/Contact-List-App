@@ -10,16 +10,29 @@ import SQLite3
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak var contactTableView: UITableView!
+    
+    var db:OpaquePointer?
+    var dataSource = [String]()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        let db = openDataBase()
+        
+        intialSetUp()
+        db = openDataBase()
+        query(db: db)
+        
         //createTable(db: db)                                       //1
         //insert(id: 1, name: "Mahmoud", db: db)                    //2
         //query(db: db)                                             //3
         //delete(ID: 1, db: db)                                     //4
-        //query(db: db)
     }
+    
+    @IBAction func addContactButtonPressed(_ sender: UIButton) {
+        showAlertController()
+    }
+    
 }
 
 //MARK: - 1st open connection with the sqlite db
@@ -82,6 +95,7 @@ extension ViewController{
             if sqlite3_step(insertStatment) == SQLITE_DONE{
                 print("\nSuccessfully inserted row")
             }else{
+                showErrorMessage(message: "User with this ID already exists")
                 print("User with this ID already exists")
             }
         }else{
@@ -95,6 +109,8 @@ extension ViewController{
 //MARK: - 4th query to fetch data you need from tables in sqlite db
 extension ViewController{
     func query(db: OpaquePointer?) {
+        dataSource.removeAll()
+        
         let queryStatementString = "SELECT * FROM Contact;"
         var queryStatement: OpaquePointer?
         // 1
@@ -113,7 +129,9 @@ extension ViewController{
                 // 5
                 print("\nQuery Result:")
                 print("\(id) | \(name)")
+                dataSource.append("\(id) | \(name)")
             }
+            self.contactTableView.reloadData()
         } else {
             // 6
             let errorMessage = String(cString: sqlite3_errmsg(db))
@@ -141,4 +159,55 @@ extension ViewController{
         }
         sqlite3_finalize(deleteStatement)
     }
+}
+
+//MARK: - show alert function
+extension ViewController{
+    func showAlertController(){
+        let ac = UIAlertController(title: "Enter contact", message: nil, preferredStyle: .alert)
+        ac.addTextField { (tf) in
+            tf.placeholder = "enter id"
+        }
+        ac.addTextField { (tf) in
+            tf.placeholder = "enter name"
+        }
+        let submitAction = UIAlertAction(title: "Submit", style: .default) { [weak self,weak ac] action in
+            guard let id = ac?.textFields?[0].text else{
+                return
+            }
+            guard let name = ac?.textFields?[1].text else{
+                return
+            }
+            guard let idAsInt = Int32(id) else{return}
+            self?.insert(id: idAsInt, name: name as NSString, db: self?.db)
+            self?.query(db: self?.db)
+        }
+        ac.addAction(submitAction)
+        present(ac,animated: true)
+    }
+    
+    func showErrorMessage(message: String) {
+        let ac = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(ac, animated: true, completion: nil)
+    }
+}
+
+extension ViewController: UITableViewDelegate, UITableViewDataSource{
+    
+    func intialSetUp(){
+        contactTableView.delegate = self
+        contactTableView.dataSource = self
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dataSource.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "contactCell")
+        cell?.textLabel?.text = dataSource[indexPath.row]
+        return cell!
+    }
+    
 }
