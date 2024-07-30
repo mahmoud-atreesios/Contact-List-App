@@ -91,3 +91,35 @@ extension ViewController{
         sqlite3_finalize(insertStatment)
     }
 }
+
+//MARK: - 4th query to fetch data you need from tables in sqlite db
+extension ViewController{
+    func query(db: OpaquePointer?) {
+        let queryStatementString = "SELECT * FROM Contact;"
+        var queryStatement: OpaquePointer?
+        // 1
+        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) ==
+            SQLITE_OK {
+            // 2
+            while (sqlite3_step(queryStatement) == SQLITE_ROW) {
+                // 3
+                let id = sqlite3_column_int(queryStatement, 0)
+                // 4
+                guard let queryResultCol1 = sqlite3_column_text(queryStatement, 1) else {
+                    print("Query result is nil")
+                    return
+                }
+                let name = String(cString: queryResultCol1)
+                // 5
+                print("\nQuery Result:")
+                print("\(id) | \(name)")
+            }
+        } else {
+            // 6
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("\nQuery is not prepared \(errorMessage)")
+        }
+        // 7
+        sqlite3_finalize(queryStatement)
+    }
+}
